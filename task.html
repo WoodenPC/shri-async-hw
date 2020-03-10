@@ -1,0 +1,57 @@
+<script src="shri-async-hw.js"></script>
+
+<script>
+  const {
+        AsyncArray,
+        add,
+        divide,
+        less,
+    } = Homework;
+  
+  const arr = new AsyncArray([1, 2, 3]);
+
+  const makeAsync = (func) => {
+    return function(...args) {
+      return new Promise((resolve, _) => {
+        func(...args, resolve);
+      });
+    }
+  };
+
+  // сделал обертки над функциями библиотеки
+  const asyncAdd = makeAsync(add);
+  const asyncDivide = makeAsync(divide);
+  const asyncLess = makeAsync(less);
+  const asyncLength = function(array) {
+    return new Promise((resolve, _) => {
+      array.length(resolve);
+    });
+  }
+
+  const asyncGet = function(array, index) {
+    return new Promise((resolve, _) => {
+      array.get(index, resolve);
+    });
+  }
+
+  async function findAverageAsync(array, cb) {
+    let i = 0;
+    let sum = 0;
+    const length = await asyncLength(array);
+    while(await asyncLess(i, length)) {
+      const number = await asyncGet(array, i);
+      sum = await asyncAdd(sum, number);
+      i = await asyncAdd(i, 1);
+    }
+
+    const result = await asyncDivide(sum, length);
+    cb(result);
+  }
+
+  window.findAverage = function(array, cb) {
+    // вызываю собственную ассинхронную функцию,
+    // не знаю насколько это правильно, просто мне не хотелось страдать с колбэками
+    findAverageAsync(array, cb);
+  };
+
+</script>
