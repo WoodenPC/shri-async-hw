@@ -1,11 +1,11 @@
 Promise._any = function(promises) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     Promise.race(promises)
       .then((value) => {
         resolve(value);
       })
-      .catch(() => {
-        reject('error')
+      .catch((reason) => {
+        console.log(reason);
       });
   });
 };
@@ -36,7 +36,7 @@ Promise._allSettled = function(promises) {
     const interval = setInterval(() => {
       if (count === length) {
         clearInterval(interval);
-        resolve(resolve);
+        resolve(result);
       }
     }, 20);
   });
@@ -44,14 +44,13 @@ Promise._allSettled = function(promises) {
 
 Promise.prototype._finally = function(callback) {
   const that = this;
-  return new Promise((resolve, _) => {
+  return new Promise((resolve, reject) => {
     that.then(() => {
       callback();
       resolve();
-    });
-    that.catch(() => {
+    }).catch(() => {
       callback();
-      resolve();
+      resolve()
     });
   });
 };
